@@ -52,7 +52,7 @@ SKIP_FILES="`echo ${SKIP_FILES} | sed -E 's#[, ]+#\\\|#g'`"
 TTL_FILES=$(cd ${PROJ_DIR} && find ./ontology -name "*.ttl" | grep -v "${SKIP_FILES}" | sed 's#\.\/##' | sort -u )
 echo $TTL_FILES
 
-echo -e "#### >>>> TTL_FILES=${TTL_FILES}"
+echo -e "#### >>>> TTL_FILES=\n${TTL_FILES}"
 
 #### ---- Copy all turtle files into one local folder: ---- ####
 OUTPUT_DIR=${PROJ_DIR}/local_ttl
@@ -65,7 +65,7 @@ function copy_local_ttl_to_one_dir() {
         #echo $i
         cp $t ${OUTPUT_DIR}
     done
-    echo -e "#### >>>>  Total RDF/TTL files: ${i}"
+    echo -e "#### >>>>  Total RDF/TTL files:\n${i}"
     ls -al ${OUTPUT_DIR}
 }
 copy_local_ttl_to_one_dir
@@ -80,7 +80,7 @@ function rdfpro_setup() {
         tar xvf $(basename ${RDFPRO_URL} )
         rm -f $(basename ${RDFPRO_URL} )
 
-        echo "RDFPRO_HOME=$RDFPRO_HOME"
+        echo ">>> RDFPRO_HOME=$RDFPRO_HOME"
         export PATH=${RDFPO_HOME}/rdfpro:$PATH
         echo "PATH=$PATH"
     fi
