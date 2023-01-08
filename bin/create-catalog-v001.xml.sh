@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 cd $(dirname $0)/..
 PROJ_DIR=$(realpath ${0%/*}/..)
@@ -11,14 +11,6 @@ echo -e ">>> PROJ_DIR=${PROJ_DIR}"
 #### ---- Find/Setup UCO_VERSION & UCO_LATEST_VERSION: ---- ####
 ####------------------------------------------------------- ####
 UCO_VERSION=${UCO_VERSION:-1.1.0}
-#function find_UCO_version() {
-#    filepath=`curl -s https://github.com/ucoProject/UCO/releases/ | grep "/tags/" | head -1|cut -d'"' -f2 `
-#    echo ">>> UCO releases: $filepath"
-#    filename=$(basename $filepath)
-#    UCO_VERSION=${filename%.*}
-#}
-# find_UCO_version
-
 function find_UCO_version_latest() {
     UCO_LATEST_VERSION="`curl --silent https://api.github.com/repos/ucoProject/UCO/releases/latest | jq -r .tag_name | sed 's/^v//' `"
     UCO_VERSION=${UCO_VERSION:-$UCO_LATEST_VERSION}
@@ -55,10 +47,11 @@ echo -e "${CATLOG_PRE_XML=}" | tee ${CATALOG_FILE}
 #    TTL_FILES=$(find . |grep -v  git | grep -v master | grep -v "LoadUCO"| grep -v 'test' | grep ttl | sort)
 ## -- find all *.ttl files: --
 cd ${PROJ_DIR}/ontology
-TTL_FILES=$(find . -name "*.ttl" | sort -u)
+TTL_FILES=$(find . -name "*.ttl" | grep -v "LoadUCO.ttl" | sort -u )
 
 UCO_ONTOLOGY_PREFIX="https://ontology.unifiedcyberontology.org/"
 for ttl in ${TTL_FILES}; do
+    #echo "ttl=$ttl"
     # <uri id="User Entered Import Resolution" uri="./ont-policy.rdf" name="https://spec.edmcouncil.org/fibo/./ont-policy/"/>
     #ENTRY="<uri id=\"Automatically generated entry\" name=\"https://unifiedcyberontology.org/ontology/uco/uco\" uri=\"./.ttl\"/>"
     #ENTRY="<uri id=\"User Entered Import Resolution\" uri=\"./ont-policy.rdf\" name=\"https://spec.edmcouncil.org/fibo/./ont-policy/\"/>
@@ -66,17 +59,14 @@ for ttl in ${TTL_FILES}; do
     ENTRY_L="    <uri id=\"User Entered Import Resolution\" uri=\""
     URI="${ttl}"
     ENTRY_M="\" name=\""
-    
     TTL_NAME="`echo $ttl|sed 's#\.\/##' `"
     TTL_NAME=$(dirname ${TTL_NAME})
-    #ONTOLOGY_NAME="https://ontology.unifiedcyberontology.org/uco/${TTL_NAME%.*}"
-    #ONTOLOGY_NAME="${UCO_ONTOLOGY_PREFIX}/${TTL_NAME%.*}/${UCO_VERSION}"
     ONTOLOGY_NAME="${UCO_ONTOLOGY_PREFIX}${TTL_NAME}/${UCO_VERSION}"
     ENTRY_R="\"/>"
     ENTRY="${ENTRY_L}${URI}${ENTRY_M}${ONTOLOGY_NAME}${ENTRY_R}"
     echo -e "${ENTRY}" | tee -a ${CATALOG_FILE}
-    echo "ttl=$ttl"
 done
+
 echo -e "${CATLOG_POST_XML}" | tee -a ${CATALOG_FILE}
 cat ${CATALOG_FILE}
 
@@ -85,8 +75,8 @@ cat ${CATALOG_FILE}
 #### ---- Generate LoadUCO.ttl (Protege RDF IDE):      ---- ####
 ####------------------------------------------------------- ####
 
-LoadUCO_ttl_prefix='
-@base <https://ontology.unifiedcyberontology.org/ontology/LoadUCO> .
+LoadUCO_ttl_prefix=\
+'@base <https://ontology.unifiedcyberontology.org/ontology/LoadUCO> .
 @prefix : <https://unifiedcyberontology.org/ontology/uco/uco#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -102,7 +92,7 @@ LoadUCO_ttl_prefix='
 	owl:imports
 '
 		
-LOADUCO_ttl_postfix="
+LoadUCO_ttl_postfix="
 		;
 	owl:versionInfo \"{{UCO_VERSION}}\" ;
 	.
@@ -124,14 +114,14 @@ for iri in ${IRI_LIST}; do
 done
 
 
-LOADUCO_ttl_postfix="
+LoadUCO_ttl_postfix="
 		;
 	owl:versionInfo \"${UCO_VERSION}\" ;
 	.
 "
-echo -e ">>> LOADUCO_ttl_postfix: ${LOADUCO_ttl_postfix}"
+echo -e ">>> LoadUCO_ttl_postfix: ${LoadUCO_ttl_postfix}"
 
-LoadUCO="${LoadUCO_ttl_prefix}${LoadUCO_iri_list}${LOADUCO_ttl_postfix}\n"
+LoadUCO="${LoadUCO_ttl_prefix}${LoadUCO_iri_list}${LoadUCO_ttl_postfix}\n"
 LoadUCO_FILE="${OUTPUT_DIR}/LoadUCO.ttl"
 echo -e "${LoadUCO}" | tee ${LoadUCO_FILE}
 

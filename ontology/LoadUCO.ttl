@@ -1,4 +1,3 @@
-
 @base <https://ontology.unifiedcyberontology.org/ontology/LoadUCO> .
 @prefix : <https://unifiedcyberontology.org/ontology/uco/uco#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
