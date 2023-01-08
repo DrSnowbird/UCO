@@ -19,8 +19,7 @@ UCO 1.1.0 incorporates required refinements and updates, building on the stable 
 
 More detail of improvements is documented in the [UCO 1.1.0 release notes](https://unifiedcyberontology.org/releases/1.1.0/).
 
-# How to load UCO ontologies into the Protege (Stanford University RDF IDE tools)
-* To 
+# How to load UCO ontologies into the Protege (Stanford University RDF IDE tools) 
 0. (Optional) If you need to re-generate the needed files for loading UCO into Protege tool, run the following command:
 ```
 bin/create-catalog-v001.xml.sh
@@ -29,5 +28,4 @@ bin/create-catalog-v001.xml.sh
 2. Choose 'File / Open ...' from the drop-down menu, then
 3. Go to the './ontology' folder, and then select the 'LoadUCO.ttl' file to open.
 4. That's it! All the needed UCO ontology files (ttl) will be loaded at once.
-
 
