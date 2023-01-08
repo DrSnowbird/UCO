@@ -45,6 +45,7 @@ CATALOG_FILE="${OUTPUT_DIR}/catalog-v001.xml"
 
 echo -e "${CATLOG_PRE_XML=}" | tee ${CATALOG_FILE}
 #    TTL_FILES=$(find . |grep -v  git | grep -v master | grep -v "LoadUCO"| grep -v 'test' | grep ttl | sort)
+
 ## -- find all *.ttl files: --
 cd ${PROJ_DIR}/ontology
 TTL_FILES=$(find . -name "*.ttl" | grep -v "LoadUCO.ttl" | sort -u )
